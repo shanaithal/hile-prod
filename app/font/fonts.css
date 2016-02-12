@@ -1,0 +1,9 @@
+@font-face {
+    font-family: hh-ikaro;
+    src: url('web-fonts/ikaros.otf') format("opentype");
+}
+
+@font-face {
+    font-family: hs-laila;
+    src: url('web-fonts/Laila-Light.ttf') format('truetype');
+}
