@@ -23,7 +23,7 @@ router.route('/homes')
 		if (!validHome(homeObject)) {
 			errorResponse.sendErrorResponse(response, 400, "Bad Request", "Invalid Payload");
 		} else {
-			if (owner_mail) {
+			if (owner_mail !== undefined && owner_mail !== null) {
 				if (emailPattern.test(owner_mail)) {
 					connector.createHome(function (err, location) {
 						if (err) {
@@ -35,16 +35,16 @@ router.route('/homes')
 				} else {
 					errorResponse.sendErrorResponse(response, 400, "Bad Request", "Invalid Payload");
 				}
-			} else {
-				connector.createHome(function (err, location) {
-					if (err) {
-						errorResponse.sendErrorResponse(response, 500, "Internal Server Error", "Could not create the requested resource");
-					} else {
-						response.statusCode = 201;
-						response.send(location);
-					}
-				}, homeObject, "_id");
-			}
+			}// } else {
+			// 	connector.createHome(function (err, location) {
+			// 		if (err) {
+			// 			errorResponse.sendErrorResponse(response, 500, "Internal Server Error", "Could not create the requested resource");
+			// 		} else {
+			// 			response.statusCode = 201;
+			// 			response.send(location);
+			// 		}
+			// 	}, homeObject, "_id");
+			// }
 		}
 	})
 	.get(function (request, response) {
