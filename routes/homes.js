@@ -21,7 +21,7 @@ router.route('/homes')
 		var owner_mail = homeObject.owner_mail;
 		var emailPattern = /[a-z.-_]+[@]\w{1,10}[.]\w{1,5}/i;
 		if (!validHome(homeObject)) {
-			errorResponse.sendErrorResponse(response, 400, "Bad Request", "Invalid Payload");
+			errorResponse.sendErrorResponse(response, 400, "Bad Request", "Invalid Home Name");
 		} else {
 			if (owner_mail !== undefined && owner_mail !== null) {
 				if (emailPattern.test(owner_mail)) {
@@ -33,7 +33,7 @@ router.route('/homes')
 						}
 					}, homeObject, "email");
 				} else {
-					errorResponse.sendErrorResponse(response, 400, "Bad Request", "Invalid Payload");
+					errorResponse.sendErrorResponse(response, 400, "Bad Request", "Invalid owner_mail");
 				}
 			}// } else {
 			// 	connector.createHome(function (err, location) {
