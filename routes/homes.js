@@ -6,7 +6,7 @@ var Utility = new require('../utilities')();
 
 function validHome(homeObject) {
 
-	if (homeObject.name.indexOf(" ") !== -1) {
+	if (homeObject.name.length < 1) {
 
 		return false;
 	}
