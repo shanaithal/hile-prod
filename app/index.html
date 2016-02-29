@@ -9,7 +9,7 @@
     <title>Household-In-a-Mile</title>
     <!-- CSS  -->
     <link rel="stylesheet"
-          href="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
+          href="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
     <link rel="stylesheet"
           href="font/fonts.css">
     <link rel="hile icon" href="images/banner/new_fav.ico" type="image/x-icon" />
@@ -37,8 +37,18 @@
                 <a href="/"><span><img src="/images/banner/hile_low_res_new.png" style="max-height:40px;"></span></a>
             </h2>
             <span flex></span>
-            <span>
-                <div class="fb-like" data-href="https://www.facebook.com/hiledotin/?ref=aymt_homepage_panel" data-width="200px" data-layout="button_count" data-action="like" data-show-faces="true" data-share="true"></div>
+            <span style="display: inline-flex" >
+               <md-button class="md-icon-button s-icon" aria-label="facebook"
+                          href="https://www.facebook.com/hiledotin/"
+                          target="_blank">
+                   <md-icon md-svg-icon="facebook-box"></md-icon>
+               </md-button>
+                 <md-button class="md-icon-button s-icon" aria-label="twitter"
+                            href="https://twitter.com/hiledotin"
+                            target="_blank">
+                     <md-icon md-svg-icon="twitter-box"></md-icon>
+                 </md-button>
+
             </span>
         </div>
     </md-toolbar>
@@ -49,7 +59,8 @@
 
             <div layout="column"
                  class="md-toolbar-tools-bottom inset"
-                 ng-if="landing.checkLoggedInUser()">
+                 ng-if="landing.checkLoggedInUser()"
+                style="text-align: center;">
                 <!--<user-avatar></user-avatar>-->
                 <span></span>
 
@@ -63,8 +74,9 @@
                 </div>
             </div>
             <div layout="column"
-                 class="md-toolbar"
-                 ng-if="!landing.checkLoggedInUser()" style="padding-left: 10px;">
+                 class="md-toolbar-tools-bottom inset"
+                 ng-if="!landing.checkLoggedInUser()"
+                 style="text-align: center;">
                 <div>Welcome to Hile</div>
                 <div>login to see your details!!</div>
             </div>
@@ -106,28 +118,9 @@
 </div>
 <!--All content changes from here on the basis of routing mechanisms-->
 <div ui-view
-     class="main-content"></div>
-<!-- Footer -->
-<!--<div flex-auto-->
-     <!--layout="column"-->
-     <!--layout-align="center center">-->
-    <!--&lt;!&ndash;<div flex>&ndash;&gt;-->
-    <!--&lt;!&ndash;<span class="hm-footer"><a style="text-decoration: none;" ng-click="landing.showTnC()">Terms & Conditions</a></span>&ndash;&gt;-->
-    <!--&lt;!&ndash;</div>&ndash;&gt;-->
-    <!--<div flex>-->
-        <!--<span class="hm-footer">&copy; Hile 2016</span>-->
-    <!--</div>-->
-<!--</div>-->
-<!-- /Footer -->
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s);
-    js.id = id;
-    js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5";
-    fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
+     class="main-content">
+
+</div>
 </body>
 
 

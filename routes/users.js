@@ -1,33 +1,25 @@
 var express = require('express');
 var router = express.Router();
-var connector = new require('../utilities/dbconnector')();
+var connector = new require('../db/dbconnector')();
 var errorResponse = new require('../utilities/error_response')();
 var Utility = new require('../utilities')();
-
-function validUser(userObject) {
-
-    var emailPattern = /^.*@.*\..*/;
-    if (userObject.email.indexOf(" ") !== -1 || !emailPattern.test(userObject.email)) {
-
-        return false;
-    }
-
-    return true;
-}
+var constants = require('../utilities/constants');
 
 router.route('/users')
     .post(function (request, response) {
         var userObject = request.body;
-        if (!validUser(userObject)) {
+        var validationError = Utility.validateInput(userObject, constants.User, constants.HTTP_POST);
+        if (validationError !== null) {
 
-            errorResponse.sendErrorResponse(response, 400, "Bad Request", "Invalid Payload");
+            errorResponse.sendErrorResponse(response, 400, constants.BAD_REQUEST_ERROR, validationError);
         } else {
             connector.createUser(function (err, location) {
                 if (err) {
-                    errorResponse.sendErrorResponse(response, 500, "Internal Server Error", "Could not Create the User");
+
+                    response.status(err.code).json(err);
                 } else {
-                    response.statusCode = 201;
-                    response.send(location);
+
+                    response.status(201).json(location);
                 }
             }, userObject);
         }
@@ -41,14 +33,16 @@ router.route('/users')
             sort_params = [sort_params];
         }
         var sort_config = {sort_params: sort_params, order: sort_order};
-        var filters = Utility._getFilters(request.query);
+        var filters = Utility.getFilters(request.query);
         var paginationConfig = {};
         paginationConfig.skip = page;
         paginationConfig.limit = elementCount;
         connector.getUsers(function (err, users) {
             if (err) {
-                errorResponse.sendErrorResponse(response, 500, "Internal Server Error", "Could not fetch users.");
+
+                response.status(err.code).json(err);
             } else {
+
                 if (users.length > 0) {
                     connector.getCollectionCount(function (err, collectionSize) {
 
@@ -65,12 +59,12 @@ router.route('/users')
                             }
                         }
                         response.status(200).json(users);
-                    }, "user");
+                    }, constants.User);
                 } else {
-                    errorResponse.sendErrorResponse(response, 404, "Not Found", "There are no users in the System");
+                    errorResponse.sendErrorResponse(response, 404, constants.NOT_FOUND_ERROR, "There are no users in the System");
                 }
             }
-        }, filters, "collection", paginationConfig, sort_config);
+        }, filters, constants.Collection, paginationConfig, sort_config);
     });
 
 router.route('/users/:user_id')
@@ -79,25 +73,36 @@ router.route('/users/:user_id')
         var user_id = request.params.user_id;
         var userObject = request.body;
 
-        var emailPattern = /^.*@.*\..*/;
-        if (emailPattern.test(user_id)) {
-            connector.updateUser(function (err, location) {
-                if (err) {
-                    errorResponse.sendErrorResponse(response, 500, "Internal Server Error", "Could not update the User");
-                } else {
-                    response.status(200).json(location);
-                }
-            }, userObject, user_id, "email");
+        var validationError = Utility.validateInput(userObject, constants.User, constants.HTTP_PUT);
+        console.log(validationError);
+        if (validationError !== null) {
+
+            errorResponse.sendErrorResponse(response, 400, constants.BAD_REQUEST_ERROR, validationError);
         } else {
-            connector.updateUser(function (err, location) {
-                if (err) {
-                    errorResponse.sendErrorResponse(response, 500, "Internal Server Error", "Could not update the User");
-                } else {
-                    response.statusCode = 200;
-                    response.setHeader('content-type', 'application/json');
-                    response.send(location);
-                }
-            }, userObject, user_id, "_id");
+            var emailPattern = /^.*@.*\..*/;
+            if (emailPattern.test(user_id)) {
+                connector.updateUser(function (err, location) {
+                    if (err) {
+
+                        response.status(err.code).json(err);
+                    } else {
+
+                        response.status(204).json(location);
+                    }
+                }, userObject, user_id, constants.Email);
+            } else {
+
+                connector.updateUser(function (err, location) {
+
+                    if (err) {
+
+                        response.status(err.code).json(err);
+                    } else {
+
+                        response.status(204).json(location);
+                    }
+                }, userObject, user_id, "_id");
+            }
         }
     })
     .get(function (request, response) {
@@ -106,60 +111,65 @@ router.route('/users/:user_id')
         if (emailPattern.test(user_id)) {
             connector.getUsers(function (err, user) {
                 if (err) {
-                    errorResponse.sendErrorResponse(response, 404, "Not Found", "The requested resource not found.");
+                    response.status(err.code).json(err);
                 } else {
-                    if (user) {
-                        response.statusCode = 200;
-                        response.setHeader('content-type', 'application/json');
-                        response.send(Utility.getFormattedResponse(user));
+                    if (Utility.isArray(user)) {
+
+                        user = user[0];
+                    }
+                    if (user.email !== undefined) {
+
+                        response.status(200).json(Utility.getFormattedResponse(user));
                     } else {
-                        errorResponse.sendErrorResponse(response, 404, "Not Found", "The requested resource not found.");
+                        errorResponse.sendErrorResponse(response, 404, constants.NOT_FOUND_ERROR, "The requested resource not found.");
                     }
                 }
             }, {
                 email: user_id
-            }, "email");
+            }, constants.Email);
         } else {
             connector.getUsers(function (err, user) {
                 if (err) {
-                    errorResponse.sendErrorResponse(response, 404, "Not Found", "The requested resource not found.");
+                    response.status(err.code).json(err);
                 } else {
-                    if (user) {
-                        response.statusCode = 200;
-                        response.setHeader('content-type', 'application/json');
-                        response.send(Utility.getFormattedResponse(user));
+                    if (Utility.isArray(user)) {
+
+                        user = user[0];
+                    }
+                    if (user.email !== undefined) {
+
+                        response.status(200).json(Utility.getFormattedResponse(user));
                     } else {
-                        errorResponse.sendErrorResponse(response, 404, "Not Found", "The requested resource not found.");
+                        errorResponse.sendErrorResponse(response, 404, constants.NOT_FOUND_ERROR, "The requested resource not found.");
                     }
                 }
             }, {
                 _id: user_id
-            }, "_id");
+            }, constants.Id);
         }
-    }).delete(function (request, response) {
-    var user_id = request.params.user_id;
-    var emailPattern = /^.*@.*\..*/;
-    if (emailPattern.test(user_id)) {
-        connector.deleteUser(function (err) {
-            if (err) {
-                errorResponse.sendErrorResponse(response, 500, "Internal Server Error", "The resource could not be deleted");
-            } else {
-                response.statusCode = 204;
-                response.end();
-            }
-        }, user_id, "email");
-    } else {
-        connector.deleteUser(function (err) {
-            if (err) {
-                errorResponse.sendErrorResponse(response, 500, "Internal Server Error", "The resource could not be deleted");
-            } else {
-                response.statusCode = 204;
-                response.end();
-            }
-        }, user_id, "_id");
-    }
+    })
+    .delete(function (request, response) {
+        var user_id = request.params.user_id;
+        var emailPattern = /^.*@.*\..*/;
+        if (emailPattern.test(user_id)) {
+            connector.deleteUser(function (err) {
+                if (err) {
+                    errorResponse.sendErrorResponse(response, 500, constants.INTERNAL_SERVER_ERROR, "The resource could not be deleted");
+                } else {
+                    response.status(204).end();
+                }
+            }, user_id, constants.Email);
+        } else {
+            connector.deleteUser(function (err) {
+                if (err) {
+                    response.status(err.code).json(err);
+                } else {
+                    response.status(204).end();
+                }
+            }, user_id, constants.Id);
+        }
 
-});
+    });
 
 router.route('/validate/user/:user_mail')
     .get(function (request, response) {
@@ -168,21 +178,20 @@ router.route('/validate/user/:user_mail')
         connector.getUsers(function (err, user) {
             if (err) {
 
-                errorResponse.sendErrorResponse(response, 401, "Unauthorised", "The User is Invalid");
+                errorResponse.sendErrorResponse(response, 401, constants.UNAUTHORISED_ERROR, "The User is Invalid");
             } else {
 
-                if (user !== undefined &&  JSON.stringify(user) !== '[]') {
+                if (user !== undefined && JSON.stringify(user) !== '[]') {
 
-            	       console.log("User " + user_mail + "logged in at : " +  new Date());
-                    errorResponse.sendErrorResponse(response, 200, "OK", "The User is Valid");
+                    errorResponse.sendErrorResponse(response, 200, constants.OK_STATUS, "The User is Valid");
                 } else {
 
-                    errorResponse.sendErrorResponse(response, 401, "Unauthorised", "The User is Invalid");
+                    errorResponse.sendErrorResponse(response, 401, constants.UNAUTHORISED_ERROR, "The User is Invalid");
                 }
             }
         }, {
             email: user_mail
-        }, "email");
+        }, constants.Email);
     });
 
 module.exports = router;

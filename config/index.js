@@ -1,7 +1,7 @@
 var config = {
-	dbHost: "mongodb://prod:prod123@ds055485.mongolab.com:55485",
-	databaseName: "heroku_cdd251z7",
-	service_url: "http://hile.herokuapp.com/api",
+	dbHost: "mongodb://dev:dev123@ds051635.mongolab.com:51635",
+	databaseName: "heroku_5mwr0382",
+	service_url: "http://hile-dev.herokuapp.com/api",
 	defaultSkip: 0,
 	defaultLimit: 25,
 	maxCount: 50,
@@ -12,7 +12,11 @@ var config = {
 	},
 	smsAlertNumbers: [
 		918237392861
-	]
+	],
+	mailAlert: {
+		senderMail: 'suryadeep10@gmail.com',
+		appSpecificPassword: 'ygdunlahtwxhmaap'
+	}
 };
 
 module.exports = config;

@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var connector = new require('../utilities/dbconnector')();
+var connector = new require('../db/dbconnector')();
 var errorResponse = new require('../utilities/error_response')();
 var Utility = new require('../utilities')();
 
@@ -17,7 +17,7 @@ router.route('/search')
 		var sort_members = queryObject.sortby;
 		var sort_order = queryObject.order;
 		var sort_config = {sort_params: sort_members, order: sort_order};
-		var filters = Utility._getFilters(queryObject);
+		var filters = Utility.getFilters(queryObject);
 		var pagination_config = {skip: pageNumber, limit: elementCount};
 
 		connector.getSearchTerm(function (err, search_items, totalSearchResults) {

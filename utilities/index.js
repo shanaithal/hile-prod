@@ -1,20 +1,29 @@
 var config = require('../config');
+var constants = require('./constants');
+var validator = require('validator');
 
 var Utility = function () {
 
-    var utilityObject = Object.create(Utility.prototype);
-    return utilityObject;
+    return Object.create(Utility.prototype);
 };
 
 var selfObject = new Utility();
 
-Utility.prototype.isArray = function (array) {
+Utility.prototype.getLocation = function (resourceId, entity, operation, baseResource) {
 
-    if (array === null || array === undefined) {
+    return {
+        message: "The " + entity + " is " + operation + " successfully.",
+        href: config.service_url + "/" + baseResource + "/" + resourceId
+    };
+};
+
+Utility.prototype.isArray = function (entity) {
+
+    if (entity === null || entity === undefined) {
 
         return false;
     }
-    if (array.constructor !== Array) {
+    if (entity.constructor !== Array) {
         return false;
     }
     return true;
@@ -32,7 +41,7 @@ Utility.prototype.getFormattedResponse = function (resultSet) {
     return formatedResponse;
 }
 
-Utility.prototype._getFilters = function (queryParams) {
+Utility.prototype.getFilters = function (queryParams) {
 
     var filters = queryParams;
     if (filters.page != undefined) {
@@ -54,7 +63,7 @@ Utility.prototype._getFilters = function (queryParams) {
     }
     //var clone = JSON.parse(JSON.stringify(queryParams));
     return filters;
-}
+};
 
 Utility.prototype.getNextPage = function (path, page, count) {
 
@@ -68,7 +77,7 @@ Utility.prototype.getNextPage = function (path, page, count) {
             path = path + "&page=" + page + "&count=" + count;
         }
     } else {
-        path = path + "&page=" + page + "&count=" + count;
+        path = path + "?page=" + page + "&count=" + count;
     }
 
     return _getLinkObject(path, "next");
@@ -297,4 +306,132 @@ Utility.prototype.isLoggedIn = function (req, res, next) {
 
     res.redirect('/');
 }
+
+Utility.prototype.validateInput = function (input, entity_type, operation) {
+
+    try {
+
+        switch (entity_type) {
+
+            case constants.User:
+
+                switch (operation) {
+
+                    case constants.HTTP_POST:
+                        if (!validator.isEmail(input.email)) {
+
+                            return "Invalid Email";
+                        } else {
+
+                            if (!validator.isNull(input.contact)) {
+
+                                if (!validator.isMobilePhone(input.contact, 'en-IN')) {
+
+                                    return "Invalid Contact";
+                                }
+                            }
+                        }
+                        break;
+                    case constants.HTTP_PUT:
+                        if (!validator.isNull(input.contact)) {
+
+                            if (!validator.isMobilePhone(input.contact, 'en-IN')) {
+
+                                return "Invalid Contact";
+                            }
+                        }
+                        break;
+                }
+                break;
+            case constants.Home:
+
+                switch (operation) {
+
+                    case constants.HTTP_POST:
+
+                        if (validator.isNull(input.name)) {
+
+                            return "Home name cannot be empty";
+                        } else {
+                            if (!validator.isNull(input.owner_mail)) {
+                                if (!validator.isEmail(input.owner_mail)) {
+
+                                    return "Invalid Owner Mail";
+                                }
+                            }
+                            if (validator.isNull(input.owner_mail) && validator.isNull(input.owner_id)) {
+
+                                return "Owner Information cannot be empty";
+                            }
+                        }
+                        break;
+                    case constants.HTTP_PUT:
+
+                        if (!validator.isNull(input.owner_mail)) {
+                            if (!validator.isEmail(input.owner_mail)) {
+
+                                return "Invalid Owner Mail";
+                            }
+                        }
+                        break;
+                }
+                break;
+            case constants.Product:
+
+                switch (operation) {
+
+                    case constants.HTTP_POST:
+                        if (!validator.isNull(input)) {
+
+                            if (validator.isNull(input.name)) {
+
+                                return "Product name cannot be empty";
+                            } else if (validator.isNull(input.home_name)) {
+
+                                return "Home name cannot be empty";
+                            } else if (validator.isNull(input.owner_mail)) {
+
+                                return "Owner Mail cannot be empty";
+                            } else if (!validator.isEmail(input.owner_mail)) {
+
+                                return "Invalid Owner Mail";
+                            } else if (validator.isNull(input.category_name)) {
+
+                                return "Category cannot be empty";
+                            } else if (validator.isNull(input.sub_category_name)) {
+
+                                return "Sub Category cannot be empty"
+                            }
+                        } else {
+
+                            return "Empty Payload";
+                        }
+                        break;
+                    case constants.HTTP_PUT:
+                        break;
+                }
+                break;
+        }
+    } catch (e) {
+
+        console.log(e);
+        return e.message;
+    }
+
+    return null;
+};
+
+Utility.prototype.isEmail = function (string) {
+
+    if (validator.isNull(string)) {
+
+        return false;
+    } else if (validator.isEmail(string)) {
+
+        return true;
+    }
+
+    return false;
+};
+
 module.exports = Utility;

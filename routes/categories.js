@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var connector = new require('../utilities/dbconnector')();
+var connector = new require('../db/dbconnector')();
 var errorResponse = new require('../utilities/error_response')();
 var Utility = new require('../utilities')();
 
@@ -10,16 +10,17 @@ router.route('/categories')
 		var categoryObject = request.body;
 		connector.createCategory(function (err, location) {
 
-			if (err) {
-				errorResponse.sendErrorResponse(response, 500, "Internal Sever Error", "The requested resource cannot be created.");
-			} else {
+			if (!err) {
 
 				response.status(201).json(location);
+			} else if (location) {
+
+				errorResponse.sendErrorResponse(response, 500, "Internal Sever Error", "The requested resource cannot be created.");
 			}
 		}, categoryObject);
 	}).get(function (request, response) {
 
-	var filters = Utility._getFilters(request.query);
+	var filters = Utility.getFilters(request.query);
 	connector.getCategories(function (err, categories) {
 
 		if (err) {

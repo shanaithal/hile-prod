@@ -23,13 +23,15 @@ QueryBuilder.prototype.build = function (query_object, search_terms, required_fi
 			query = query.sort(sort_object);
 		}
 	}
-	if (pagination_config !== undefined) {
+
+	query.sort({createdAt: -1});
+	if (pagination_config !== undefined && pagination_config !== null) {
 
 		if (pagination_config.limit > config.maxCount) {
 			pagination_config.skip = config.defaultSkip;
 			pagination_config.limit = config.defaultLimit;
 		}
-		if (pagination_config === {}) {
+		if (pagination_config.limit === undefined && pagination_config.skip === undefined) {
 			pagination_config.skip = config.defaultSkip;
 			pagination_config.limit = config.defaultLimit;
 		}
@@ -42,6 +44,9 @@ QueryBuilder.prototype.build = function (query_object, search_terms, required_fi
 		}
 
 		query.skip(pagination_config.skip).limit(pagination_config.limit);
+	} else {
+
+		query.skip(config.defaultSkip).limit(config.defaultLimit);
 	}
 
 	return query.lean();

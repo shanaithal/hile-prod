@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var connector = new require('../utilities/dbconnector')();
+var connector = new require('../db/dbconnector')();
 var errorResponse = new require('../utilities/error_response')();
 var Utility = new require('../utilities')();
 var multiparty = require('multiparty');
@@ -35,7 +35,7 @@ router.route('/products/:product_id/images')
 router.route('/images')
 	.get(function (request, response) {
 
-		var filters = Utility._getFilters(request.query);
+		var filters = Utility.getFilters(request.query);
 		connector.getImages(function (err, images) {
 
 			if (err) {
@@ -83,7 +83,7 @@ router.route('/images/:image_id')
 				errorResponse.sendErrorResponse(response, 404, "Not Found", "The requested Image not found");
 			} else {
 
-				response.status(200).json(Utility.getFormattedResponse(image));
+				response.status(200).contentType("image/jpeg").send(new Buffer(image.content, 'base64'));
 			}
 		}, {_id: image_id}, "_id");
 	});

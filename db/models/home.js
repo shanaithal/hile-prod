@@ -20,9 +20,6 @@ var homeSchema = new mongoose.Schema({
 	home_type: {
 		type: String
 	},
-	community_name: {
-		type: String
-	},
 	createdAt: {
 		type: Date,
 		default: Date.now()

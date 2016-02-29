@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var connector = new require('../utilities/dbconnector')();
+var connector = new require('../db/dbconnector')();
 var errorResponse = new require('../utilities/error_response')();
 var Utility = new require('../utilities')();
 
@@ -25,7 +25,7 @@ router.route('/vendors')
             sort_params = [sort_params];
         }
         var sort_config = {sort_params: sort_params, order: sort_order};
-        var filters = Utility._getFilters(request.query);
+        var filters = Utility.getFilters(request.query);
         var paginationConfig = {};
         paginationConfig.skip = page;
         paginationConfig.limit = elementCount;

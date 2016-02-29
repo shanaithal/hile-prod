@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var connector = new require('../utilities/dbconnector')();
+var connector = new require('../db/dbconnector')();
 var errorResponse = new require('../utilities/error_response')();
 var Utility = new require('../utilities')();
 
@@ -12,7 +12,12 @@ router.route('/buzzes')
 
             if (err) {
 
-            	  response.send(err);
+                if (err.message !== undefined) {
+
+                    response.status(400).json(err);
+                } else {
+                    errorResponse.sendErrorResponse(response, 500, "Internal Server Error", "The requested resource could not be created.");
+                }
             } else {
 
                 response.status(201).json(location);
@@ -29,7 +34,7 @@ router.route('/buzzes')
             sort_params = [sort_params];
         }
         var sort_config = {sort_params: sort_params, order: sort_order};
-        var filters = Utility._getFilters(request.query);
+        var filters = Utility.getFilters(request.query);
         var pagination_config = {};
         pagination_config.skip = page;
         pagination_config.limit = elementCount;
@@ -82,7 +87,7 @@ router.route('/buzzes/:buzz_id')
 
                 response.status(204).json(location);
             }
-        }, {_id: buzz_id, status: status});
+        }, buzz_id, {status: status});
     }).get(function (request, response) {
 
     var buzz_id = request.params.buzz_id;
