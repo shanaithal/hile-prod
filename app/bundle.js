@@ -64203,7 +64203,7 @@
 	  value: true
 	});
 	var hileConstants = {
-	  base: 'http://hile.herokuapp.com',
+	  base: 'https://hile.herokuapp.com',
 	  //users:
 	  users: '/api/users',
 	  products: '/api/products',
