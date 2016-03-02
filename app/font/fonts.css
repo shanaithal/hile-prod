@@ -4,6 +4,17 @@
 }
 
 @font-face {
+    font-family: h-quest;
+    src: url('web-fonts/Quest.otf') format("opentype");
+}
+
+@font-face {
     font-family: hs-laila;
     src: url('web-fonts/Laila-Light.ttf') format('truetype');
 }
+
+@font-face {
+    font-family: h-lato;
+    src: url('web-fonts/Lato-Regular.ttf') format('truetype');
+}
+
