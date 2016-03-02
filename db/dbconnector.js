@@ -224,7 +224,11 @@ DBConnector.prototype.getProducts = function (callback, filters, fetchType, pagi
                         callback({code: 500, message: "Internal Server Error", description: "Unknown DB error occurred"});;
                     } else {
 
-                        Buzz.count({product_id: filters._id}, function (err, count) {
+                        if (product === undefined || product === null || JSON.stringify(product) === '{}') {
+
+                            callback({code: 404, message: "Not Found", description: "The requested resource could not be found"});;
+                        } else {
+                            Buzz.count({product_id: filters._id}, function (err, count) {
 
                                 product = Utility.getLinkedObjects(product, {
                                     type: "product",
@@ -271,8 +275,8 @@ DBConnector.prototype.getProducts = function (callback, filters, fetchType, pagi
                                         });
                                     }
                                 });
-                            }
-                        );
+                            });
+                        }
                     }
                 }
             );

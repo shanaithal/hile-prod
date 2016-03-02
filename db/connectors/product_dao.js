@@ -252,7 +252,7 @@ ProductDAO.prototype.getProducts = function (filters, fetchType, paginationConfi
 
 };
 
-ProductDAO.prototype.deleteProduct = function (productId) {
+ProductDAO.prototype.deleteProduct = function (productId, callback) {
 
     Product.findOneAndRemove({_id: productId}, function (err) {
 
