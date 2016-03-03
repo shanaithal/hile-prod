@@ -83,7 +83,11 @@ router.route('/images/:image_id')
 				errorResponse.sendErrorResponse(response, 404, "Not Found", "The requested Image not found");
 			} else {
 
-				response.status(200).json(Utility.getFormattedResponse(image));
+				var img = new Buffer(image.content, 'base64');
+
+				response.status(200);
+				response.setHeader('Content-Type', 'image/jpg');
+				response.end(img);
 			}
 		}, {_id: image_id}, "_id");
 	});

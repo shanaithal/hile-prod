@@ -646,7 +646,6 @@ DBConnector.prototype.getProducts = function (callback, filters, fetchType, pagi
                                     images = [images];
                                 }
                                 if (images[0] !== undefined) {
-                                    products[index].image_content = images[0].content;
 
                                     var image_link = {
                                                             href: config.service_url + "/images/" + images[0]._id,
