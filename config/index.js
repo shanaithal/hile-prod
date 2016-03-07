@@ -3,7 +3,7 @@ var config = {
 	databaseName: "heroku_cdd251z7",
 	service_url: "https://hile.herokuapp.com/api",
 	defaultSkip: 0,
-	defaultLimit: 25,
+	defaultLimit: 20,
 	maxCount: 50,
 	twilio: {
 		account_sid: 'ACe21245ab7a9d40692353753534f1a13a',
