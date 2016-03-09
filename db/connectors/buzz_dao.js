@@ -49,7 +49,7 @@ BuzzDAO.prototype.getBuzzes = function (filters, fetchType, paginationConfig, so
             break;
         default:
 
-            query = QueryBuilder.build(Buzz, filters, fieldsOmittedFromResponse, sort_config, pagination_config);
+            query = QueryBuilder.build(Buzz, filters, fieldsOmittedFromResponse, sortConfig, paginationConfig);
     }
     query.exec(function (err, buzzes) {
 
