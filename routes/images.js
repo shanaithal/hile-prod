@@ -87,7 +87,7 @@ router.route('/images/:image_id')
 
 				response.status(200);
 				response.setHeader('Content-Type', 'image/jpg');
-				response.end(img);
+				response.end(image);
 			}
 		}, {_id: image_id}, "_id");
 	});
