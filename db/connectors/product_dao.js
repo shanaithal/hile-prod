@@ -129,7 +129,7 @@ ProductDAO.prototype.createProduct = function (productObject, callback) {
 ProductDAO.prototype.updateProduct = function (productObject, product_id, callback) {
 
     var validationError = Utility.validateInput(productObject, constants.Product, constants.HTTP_PUT)
-    if (validationError !== null || validationError !== undefined) {
+    if (validationError !== null && validationError !== undefined) {
 
         callback({code: 400, message: constants.BAD_REQUEST_ERROR, description: validationError});
     } else {
