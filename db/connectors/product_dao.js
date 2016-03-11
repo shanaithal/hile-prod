@@ -13,7 +13,7 @@ var ProductDAO = function () {
 ProductDAO.prototype.createProduct = function (productObject, callback) {
 
     var validationError = Utility.validateInput(productObject, constants.Product, constants.HTTP_POST)
-    if (validationError !== null && validationError !== undefined) {
+    if (validationError !== null) {
 
         callback({code: 400, message: constants.BAD_REQUEST_ERROR, description: validationError});
     } else {
@@ -129,7 +129,7 @@ ProductDAO.prototype.createProduct = function (productObject, callback) {
 ProductDAO.prototype.updateProduct = function (productObject, product_id, callback) {
 
     var validationError = Utility.validateInput(productObject, constants.Product, constants.HTTP_PUT)
-    if (validationError !== null || validationError !== undefined) {
+    if (validationError !== null) {
 
         callback({code: 400, message: constants.BAD_REQUEST_ERROR, description: validationError});
     } else {
@@ -227,7 +227,7 @@ ProductDAO.prototype.updateProduct = function (productObject, product_id, callba
         Product.findOneAndUpdate({
 
             _id: product_id
-        }, {
+        }, productObject, {
             new: true
         }, function (err, product) {
 
